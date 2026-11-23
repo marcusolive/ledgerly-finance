@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ledgerly | Finance management console</title>
+<meta name="description" content="Demo finance console for a mid-size company: cash flow forecast, receivables, payables approvals, budgets and P&L reporting.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/kit.css">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="demo-bar">Demo system built by <a href="https://marcusolive.github.io">Marcus Oliveira</a>. Fictional company and data, no real bank connections.</div>
+
+<header class="appbar">
+  <button class="burger" aria-label="Open navigation" data-icon="menu"></button>
+  <div class="brand"><span class="logo" data-icon="wallet"></span>Ledgerly <small>Finance</small></div>
+  <div class="proj">Entity: <b>Harlow &amp; Pike Industries</b></div>
+  <label class="search"><span data-icon="search"></span><input id="q" placeholder="Search invoices, customers, bills, vendors" aria-label="Search"><kbd>/</kbd></label>
+  <div class="icons">
+    <button aria-label="Help" data-icon="help"></button>
+    <button aria-label="Notifications" id="bell" data-icon="bell"><span class="dot"></span></button>
+    <span class="avatar" aria-label="Signed in as Marcus">MO</span>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="side" aria-label="Main">
+    <a data-view="overview" data-icon="home">Overview</a>
+    <a data-view="cashflow" data-icon="swap">Cash flow</a>
+    <div class="sec">Operations</div>
+    <a data-view="receivables" data-icon="users">Accounts receivable <span class="badge bad" id="arBadge"></span></a>
+    <a data-view="payables" data-icon="card">Accounts payable <span class="badge warn" id="apBadge"></span></a>
+    <a data-view="budgets" data-icon="chart">Budgets</a>
+    <div class="sec">Finance</div>
+    <a data-view="reports" data-icon="doc">Reports</a>
+    <a data-view="settings" data-icon="settings">Settings</a>
+  </nav>
+
+  <main class="main">
+    <section class="view" id="overview">
+      <div class="crumbs">Harlow &amp; Pike / Overview</div>
+      <div class="head"><div><h1 id="greet">Good morning, Marcus</h1><p>Cash on hand across <b id="bankCount">0</b> connected accounts: <b id="cashHead">$0</b> as of today.</p></div>
+        <div class="actions"><button class="btn" data-go="cashflow" data-icon="swap">Cash forecast</button><button class="btn primary" data-new-invoice data-icon="plus">New invoice</button></div></div>
+      <div class="grid g4" id="kpis"></div>
+      <div class="grid g21 mt">
+        <div class="card"><h3>Revenue vs expenses <div class="seg" id="range"><button data-r="6">6m</button><button data-r="12" class="on">12m</button></div></h3><div id="revChart"></div></div>
+        <div class="card"><h3>Expenses by category <small>month to date</small></h3><div id="expDonut"></div></div>
+      </div>
+      <div class="grid g2 mt">
+        <div class="card"><h3>Upcoming payments <a href="#payables" data-go="payables" class="more">View all</a></h3><div class="list" id="upcoming"></div></div>
+        <div class="card"><h3>Alerts <small id="alertCount"></small></h3><div class="list" id="alerts"></div></div>
+      </div>
+    </section>
+
+    <section class="view" id="cashflow">
+      <div class="crumbs">Harlow &amp; Pike / Cash flow</div>
+      <div class="head"><div><h1>Cash flow</h1><p>Four weeks of actuals followed by a rolling 13-week forecast.</p></div>
+        <div class="actions"><span class="lbl-inline">Scenario</span><div class="seg" id="scenario"><button data-s="conservative">Conservative</button><button data-s="base" class="on">Base</button><button data-s="optimistic">Optimistic</button></div></div></div>
+      <div class="grid g4" id="cashKpis"></div>
+      <div class="card mt"><h3>13-week cash forecast <small id="policyNote"></small></h3><div id="forecastChart"></div></div>
+      <div class="grid g21 mt">
+        <div class="card"><h3>Weekly cash movement <div class="seg" id="flowMode"><button data-m="net" class="on">Net</button><button data-m="in">Inflows</button><button data-m="out">Outflows</button></div></h3><div id="flowBars"></div></div>
+        <div class="card"><h3>Scenario assumptions</h3><div class="list" id="assumptions"></div></div>
+      </div>
+      <div class="card mt"><h3>Weekly detail</h3><div id="weeksTable"></div></div>
+    </section>
+
+    <section class="view" id="receivables">
+      <div class="crumbs">Harlow &amp; Pike / Accounts receivable</div>
+      <div class="head"><div><h1>Accounts receivable</h1><p>Customer invoices, collections and aging.</p></div><button class="btn primary" data-new-invoice data-icon="plus">New invoice</button></div>
+      <div class="grid g4" id="arKpis"></div>
+      <div class="card mt"><h3>Aging <small>open balance by days outstanding</small></h3><div class="grid g2 aging"><div id="agingBars"></div><div class="list" id="agingList"></div></div></div>
+      <div class="card mt" id="arTable"></div>
+    </section>
+
+    <section class="view" id="payables">
+      <div class="crumbs">Harlow &amp; Pike / Accounts payable</div>
+      <div class="head"><div><h1>Accounts payable</h1><p>Vendor bills move through approval, scheduling and payment.</p></div></div>
+      <ol class="flow" id="apFlow"></ol>
+      <div class="card mt" id="apTable"></div>
+    </section>
+
+    <section class="view" id="budgets">
+      <div class="crumbs">Harlow &amp; Pike / Budgets</div>
+      <div class="head"><div><h1>Budgets</h1><p id="budgetSub">Quarter to date, actual spend plus committed purchase orders.</p></div></div>
+      <div class="grid g3" id="budgetKpis"></div>
+      <div class="grid g21 mt">
+        <div class="card"><h3>Departments <small>actual + committed vs budget</small></h3><div class="list" id="deptList"></div></div>
+        <div class="card"><h3>Budget used <small>% of quarter budget</small></h3><div id="budgetBars"></div></div>
+      </div>
+    </section>
+
+    <section class="view" id="reports">
+      <div class="crumbs">Harlow &amp; Pike / Reports</div>
+      <div class="head"><div><h1>Profit &amp; loss</h1><p>Closed quarters compared with the previous quarter.</p></div>
+        <div class="actions"><div class="seg" id="quarterSeg"></div><button class="btn" id="exportPnl" data-icon="download">Export CSV</button></div></div>
+      <div class="grid g4" id="pnlKpis"></div>
+      <div class="card mt"><h3 id="pnlTitle">Statement</h3><div class="tbl-wrap"><table class="t pnl" id="pnl"></table></div></div>
+      <div class="grid g2 mt">
+        <div class="card"><h3>EBITDA by month <small>last 12 months</small></h3><div id="ebitdaBars"></div></div>
+        <div class="card"><h3>Margins <small>last 12 months</small></h3><div id="marginChart"></div></div>
+      </div>
+    </section>
+
+    <section class="view" id="settings">
+      <div class="crumbs">Harlow &amp; Pike / Settings</div>
+      <div class="head"><div><h1>Settings</h1><p>Bank connections, reporting preferences and approval policies.</p></div></div>
+      <div class="grid g2">
+        <div class="card"><h3>Bank connections <small id="bankTotal"></small></h3><div class="list" id="banks"></div><button class="btn mt-s" id="connectBank" data-icon="plus">Connect bank</button></div>
+        <div class="card"><h3>Preferences</h3>
+          <form class="form" id="prefs">
+            <label>Reporting currency<select id="currency"><option value="USD">USD · US dollar</option><option value="EUR">EUR · Euro</option><option value="GBP">GBP · British pound</option><option value="BRL">BRL · Brazilian real</option></select></label>
+            <label>Fiscal year starts in<select id="fyStart"><option value="0">January</option><option value="3">April</option><option value="6">July</option><option value="9">October</option></select></label>
+            <label>Minimum cash policy<input id="minCash" type="number" min="0" step="100000" inputmode="numeric"></label>
+          </form>
+          <p class="hint">Amounts are stored in USD and converted with fixed demo rates.</p>
+        </div>
+      </div>
+      <div class="card mt"><h3>Approval policies</h3><div class="list" id="policies"></div></div>
+    </section>
+  </main>
+</div>
+
+<script src="assets/js/kit.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
